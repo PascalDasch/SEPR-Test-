@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.assignment.individual.service.impl;
 
+import at.ac.tuwien.sepr.assignment.individual.dto.HorseCreateDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.HorseUpdateDto;
@@ -15,6 +16,7 @@ import at.ac.tuwien.sepr.assignment.individual.service.HorseService;
 import at.ac.tuwien.sepr.assignment.individual.service.OwnerService;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -63,6 +65,18 @@ public class HorseServiceImpl implements HorseService {
     }
     return horses.stream()
         .map(horse -> mapper.entityToListDto(horse, ownerMap));
+  }
+
+  @Override
+  public HorseDetailDto create(HorseCreateDto horse) throws ValidationException, ConflictException {
+    LOG.trace("create({})", horse);
+    validator.validateForCreate(horse);
+
+    var createdHorse = dao.create(horse);
+    return mapper.entityToDetailDto(
+        createdHorse,
+        new HashMap<>()
+    );
   }
 
 

@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.assignment.individual.persistence.impl;
 
+import at.ac.tuwien.sepr.assignment.individual.dto.HorseCreateDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.HorseUpdateDto;
 import at.ac.tuwien.sepr.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepr.assignment.individual.exception.FatalException;
@@ -31,6 +32,15 @@ public class HorseJdbcDao implements HorseDao {
   private static final String SQL_SELECT_BY_ID =
       "SELECT * FROM " + TABLE_NAME
           + " WHERE ID = :id";
+
+  //TODO: Finish the 'insert' and 'update' Strings
+  private static final String SQL_INSERT =
+      "INSERT INTO " + TABLE_NAME
+          + """
+             (name, description, date_of_birth, sex) 
+             VALUES 
+             (:name, :description, :date_of_birth, :sex)
+        """;
 
   private static final String SQL_UPDATE =
       "UPDATE " + TABLE_NAME
@@ -79,6 +89,26 @@ public class HorseJdbcDao implements HorseDao {
     return horses.getFirst();
   }
 
+  @Override
+  public Horse create(HorseCreateDto horse) {
+    LOG.trace("create({})", horse);
+    int created = jdbcClient
+        .sql(SQL_INSERT)
+        .param("name", horse.name())
+        .param("description", horse.description())
+        .param("date_of_birth", horse.dateOfBirth())
+        .param("sex", horse.sex().toString())
+        .param("owner_id", horse.ownerId())
+        .update();
+
+    return new Horse(
+        null,
+        horse.name(),
+        horse.description(),
+        horse.dateOfBirth(),
+        horse.sex(),
+        horse.ownerId());
+  }
 
   @Override
   public Horse update(HorseUpdateDto horse) throws NotFoundException {

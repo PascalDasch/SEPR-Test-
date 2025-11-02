@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.assignment.individual.rest;
 
+import at.ac.tuwien.sepr.assignment.individual.dto.HorseCreateDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.HorseSearchDto;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,6 +74,24 @@ public class HorseEndpoint {
       logClientError(status, "Horse to get details of not found", e);
       throw new ResponseStatusException(status, e.getMessage(), e);
     }
+  }
+
+  /**
+   * Creates a horse, including an optional image file.
+   *
+   * @param toCreate  the created horse data
+   * @return the created horse details
+   * @throws ValidationException     if validation fails
+   * @throws ConflictException       if a conflict occurs while updating
+   * @throws ResponseStatusException if the horse is not found
+   */
+  @PostMapping
+  public HorseDetailDto create(
+      @RequestBody HorseCreateDto toCreate)
+      throws ValidationException, ConflictException {
+    LOG.info("PUT " + BASE_PATH + "/{}", toCreate);
+    LOG.debug("Body of request:\n{}", toCreate);
+    return service.create(toCreate);
   }
 
 

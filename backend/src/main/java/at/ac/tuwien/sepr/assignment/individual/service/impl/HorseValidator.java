@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.assignment.individual.service.impl;
 
 
+import at.ac.tuwien.sepr.assignment.individual.dto.HorseCreateDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.HorseUpdateDto;
 import at.ac.tuwien.sepr.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepr.assignment.individual.exception.ValidationException;
@@ -18,6 +19,25 @@ import org.springframework.stereotype.Component;
 public class HorseValidator {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  public void validateForCreate(HorseCreateDto horse) throws ValidationException {
+    LOG.trace("validateForCreate({})", horse);
+    List<String> validationErrors = new ArrayList<>();
+
+    if (horse.description() != null) {
+      if (horse.description().isBlank()) {
+        validationErrors.add("Horse description is given but blank");
+      }
+      if (horse.description().length() > 4095) {
+        validationErrors.add("Horse description too long: longer than 4095 characters");
+      }
+    }
+
+    //TODO: Check horse birth date (and make sure it's not in the future), and other relevant data
+
+    if (!validationErrors.isEmpty()) {
+      throw new ValidationException("Validation of horse for update failed", validationErrors);
+    }
+  }
 
   /**
    * Validates a horse before updating, ensuring all fields meet constraints and checking for conflicts.
@@ -48,5 +68,4 @@ public class HorseValidator {
     }
 
   }
-
 }
